@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.android.arijit.firebase.walker.adapters.GalleryAdapter;
 import com.android.arijit.firebase.walker.databinding.FragmentGalleryBinding;
+import com.android.arijit.firebase.walker.utils.OnBackPressImpl;
 import com.android.arijit.firebase.walker.viewmodel.GalleryViewModel;
 
 /**
@@ -49,12 +49,7 @@ public class GalleryFragment extends Fragment {
     }
 
     private void handleBackPress() {
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                getParentFragmentManager().popBackStack();
-            }
-        });
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, OnBackPressImpl.getInstance(requireActivity()));
     }
 
     @Override

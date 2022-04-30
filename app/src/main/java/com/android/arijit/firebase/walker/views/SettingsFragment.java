@@ -12,17 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.android.arijit.firebase.walker.MainActivity;
-import com.android.arijit.firebase.walker.activities.AccountActivity;
 import com.android.arijit.firebase.walker.R;
+import com.android.arijit.firebase.walker.activities.AccountActivity;
 import com.android.arijit.firebase.walker.databinding.FragmentSettiingsBinding;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.android.arijit.firebase.walker.utils.OnBackPressImpl;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
@@ -55,13 +54,7 @@ public class SettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 //        if (getArguments() != null) {}
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                ((BottomNavigationView)requireActivity().findViewById(R.id.navigation))
-                        .setSelectedItemId(R.id.navigation_home);
-            }
-        });
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, OnBackPressImpl.getInstance(requireActivity()));
     }
 
     public static int SYSTEM_THEME = 0;

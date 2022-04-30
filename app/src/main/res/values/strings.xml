@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Distance Tracker</string>
+    <string name="app_name">Trackify</string>
     <string name="title_home">Home</string>
     <string name="title_history">History</string>
     <string name="title_settings">Settings</string>
@@ -21,4 +21,11 @@
     <string name="logout_success">Logout Successful</string>
     <string name="login_success">Login Successful</string>
     <string name="photos">Photos</string>
+    <string name="covid_declaration">Covid Declaration</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirm_message">Confirm you are Covid positive since %s ?</string>
+    <string name="covid_summary">You have marked yourself as Covid positive since %s</string>
+    <string name="mark_as_safe">Mark as Safe</string>
+    <string name="mark_as_safe_qn">Mark as Safe ?</string>
+    <string name="your_covid_status">Your Covid Status</string>
 </resources>

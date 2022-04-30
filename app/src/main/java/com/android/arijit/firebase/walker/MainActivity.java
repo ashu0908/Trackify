@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.android.arijit.firebase.walker.databinding.ActivityMainBinding;
 import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
 import com.android.arijit.firebase.walker.utils.FirebaseUtil;
+import com.android.arijit.firebase.walker.views.CovidFragment;
 import com.android.arijit.firebase.walker.views.HistoryOptionsFragment;
 import com.android.arijit.firebase.walker.views.HomeFragment;
 import com.android.arijit.firebase.walker.views.SettingsFragment;
@@ -89,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements
                 binding.navigation.getMenu()
                         .findItem(R.id.navigation_settings)
                         .setIcon(R.drawable.ic_outline_settings_24);
+                binding.navigation.getMenu()
+                        .findItem(R.id.navigation_form)
+                        .setIcon(R.drawable.ic_outline_coronavirus_24);
                 while(cnt-- > 1)
                     fm.popBackStack();
                 return true;
@@ -99,6 +103,9 @@ public class MainActivity extends AppCompatActivity implements
                 binding.navigation.getMenu()
                         .findItem(R.id.navigation_settings)
                         .setIcon(R.drawable.ic_outline_settings_24);
+                binding.navigation.getMenu()
+                        .findItem(R.id.navigation_form)
+                        .setIcon(R.drawable.ic_outline_coronavirus_24);
                 while(cnt-- > 1)
                     fm.popBackStack();
 //                fragment = new HistoryFragment(this);
@@ -111,9 +118,26 @@ public class MainActivity extends AppCompatActivity implements
                 binding.navigation.getMenu()
                         .findItem(R.id.navigation_settings)
                         .setIcon(R.drawable.ic_baseline_settings_24);
+                binding.navigation.getMenu()
+                        .findItem(R.id.navigation_form)
+                        .setIcon(R.drawable.ic_outline_coronavirus_24);
                 while(cnt-- > 1)
                     fm.popBackStack();
                 fragment = new SettingsFragment();
+                break;
+            case R.id.navigation_form:
+                binding.navigation.getMenu()
+                        .findItem(R.id.navigation_home)
+                        .setIcon(R.drawable.ic_outline_home_24);
+                binding.navigation.getMenu()
+                        .findItem(R.id.navigation_settings)
+                        .setIcon(R.drawable.ic_outline_settings_24);
+                binding.navigation.getMenu()
+                        .findItem(R.id.navigation_form)
+                        .setIcon(R.drawable.ic_baseline_coronavirus_24);
+                while(cnt-- > 1)
+                    fm.popBackStack();
+                fragment = CovidFragment.newInstance();
                 break;
             default:
                 fragment = null;
@@ -137,6 +161,11 @@ public class MainActivity extends AppCompatActivity implements
                 binding.navigation.getMenu()
                         .findItem(R.id.navigation_home)
                         .setIcon(R.drawable.ic_baseline_home_24);
+                break;
+            case R.id.navigation_form:
+                binding.navigation.getMenu()
+                        .findItem(R.id.navigation_form)
+                        .setIcon(R.drawable.ic_baseline_coronavirus_24);
                 break;
             default:
                 break;

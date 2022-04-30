@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,7 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.android.arijit.firebase.walker.R;
 import com.android.arijit.firebase.walker.databinding.FragmentHistoryOptionsBinding;
 import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.android.arijit.firebase.walker.utils.OnBackPressImpl;
 
 public class HistoryOptionsFragment extends Fragment {
 
@@ -35,13 +34,7 @@ public class HistoryOptionsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                ((BottomNavigationView)requireActivity().findViewById(R.id.navigation))
-                        .setSelectedItemId(R.id.navigation_home);
-            }
-        });
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, OnBackPressImpl.getInstance(requireActivity()));
     }
 
     @Nullable

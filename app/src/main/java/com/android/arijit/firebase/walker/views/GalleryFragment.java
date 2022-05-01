@@ -71,5 +71,6 @@ public class GalleryFragment extends Fragment {
         binding.photosList.setAdapter(adapter);
 
         viewModel.pictureList.observe( getViewLifecycleOwner(), adapter::submitList);
+        viewModel.refreshPictureList();
     }
 }

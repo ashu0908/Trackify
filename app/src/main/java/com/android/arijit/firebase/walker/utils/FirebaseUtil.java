@@ -1,5 +1,6 @@
 package com.android.arijit.firebase.walker.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -12,11 +13,11 @@ import com.android.arijit.firebase.walker.interfaces.OnDataFetchedListener;
 import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
 import com.android.arijit.firebase.walker.models.PictureData;
 import com.android.arijit.firebase.walker.models.ResultData;
-import com.android.arijit.firebase.walker.viewmodel.GalleryViewModel;
 import com.android.arijit.firebase.walker.viewmodel.HistoryListViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -26,6 +27,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -47,8 +50,9 @@ public class FirebaseUtil {
             STATUS = "status";
 
     final static String COLLECTION_SEPARATOR = "/";
-    private static FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
-    private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    @SuppressLint("StaticFieldLeak")
+    private static final FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
+    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private static String getUserEmail() {
         String email;
@@ -166,12 +170,11 @@ public class FirebaseUtil {
 
         // adding listeners on upload
         // or failure of image
-        String finalEmail = email;
         ref.putFile(filePath)
                 .addOnSuccessListener(taskSnapshot ->
                         ref.getDownloadUrl().addOnSuccessListener(uri -> {
                             String urlToImage = uri.toString();
-                            saveImageData(finalEmail, urlToImage);
+                            saveImageData(email, urlToImage);
                             // TODO: Delete the local copy of the cache
                         })
                 )
@@ -190,7 +193,7 @@ public class FirebaseUtil {
      * fetch all the data related
      * to images from the Firebase
      */
-    public static void fetchPictureData(GalleryViewModel.OnDataFetchListener onDoneCallback) {
+    public static void fetchPictureData(Consumer<List<PictureData>> onDoneCallback) {
 
         String email = getUserEmail();
         ArrayList<PictureData> pictureList = new ArrayList<>();
@@ -209,7 +212,7 @@ public class FirebaseUtil {
                                                     documentSnapshot.toObject(PictureData.class))
                                             .collect(Collectors.toList())
                             );
-                            onDoneCallback.onDataFetch(pictureList);
+                            onDoneCallback.accept(pictureList);
                         }
                 );
 
@@ -221,13 +224,14 @@ public class FirebaseUtil {
      *
      * @param status whether user is effected or not
      */
-    public static void updateCovidStatus(boolean status, Date date, Consumer<Void> listener) {
+    public static void updateCovidStatus(boolean status, Date date, LatLng latlng, Consumer<Void> listener) {
 
         String email = getUserEmail();
 
-        HashMap<String, Object> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put(STATUS, status);
         data.put(DATE, new Timestamp(date));
+        data.put(TRAVEL_COORDINATES, latlng);
 
         mFirestore.document(COVID_STATUS + COLLECTION_SEPARATOR + email)
                 .set(data)
@@ -242,7 +246,7 @@ public class FirebaseUtil {
         mFirestore.document(COVID_STATUS + COLLECTION_SEPARATOR + email)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    Boolean status = (Boolean) documentSnapshot.getBoolean(STATUS);
+                    Boolean status = documentSnapshot.getBoolean(STATUS);
                     Date date = null;
                     Timestamp ts = (Timestamp) documentSnapshot.get(DATE);
                     if (ts != null) date = ts.toDate();
@@ -260,5 +264,25 @@ public class FirebaseUtil {
                 .addOnFailureListener(e -> Log.i(TAG, "deleteCovidStatus: " + e.getMessage()));
     }
 
+    @SuppressWarnings("unchecked")
+    public static void getCovidHotspot(Consumer<List<LatLng>> onCoorFetchListener) {
+        mFirestore.collection(COVID_STATUS)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                    List<LatLng> resList = new ArrayList<>();
+                    for(DocumentSnapshot document : documents) {
+                        Map<String, Double> map = (Map<String, Double>) document.get(TRAVEL_COORDINATES);
+                        Objects.requireNonNull(map);
+                        resList.add(new LatLng(
+                                Objects.requireNonNull(map.get("latitude")),
+                                Objects.requireNonNull(map.get("longitude"))
+                        ));
+                    }
+                    onCoorFetchListener.accept(resList);
+                })
+                .addOnFailureListener(e -> Log.i(TAG, "getCovidHotspot: " + e.getMessage()));
+
+    }
 
 }

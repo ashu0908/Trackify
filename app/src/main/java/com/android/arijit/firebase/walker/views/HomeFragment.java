@@ -54,6 +54,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -85,20 +86,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         this.firebaseResultListener = listener;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate: ");
-        super.onCreate(savedInstanceState);
-        viewModel = ForegroundService.locationViewModel;
-        setObservers();
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                requireActivity().finish();
-            }
-        });
-    }
-
     /**
      * Data members
      */
@@ -114,6 +101,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public static int POLYLINE_COLOR;
     private LocationViewModel viewModel;
     private HistoryListViewModel historyViewModel;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate: ");
+        super.onCreate(savedInstanceState);
+        viewModel = ForegroundService.locationViewModel;
+        setObservers();
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                requireActivity().finish();
+            }
+        });
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -144,6 +145,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         valueAnimator = ViewUtil.animatorForFab(binding.fabAction);
         setOnClickListeners();
         ViewUtil.init(binding.fabActionCam);
+        viewModel.getHotspotList().observe(getViewLifecycleOwner(), list -> {
+            if(mMap == null)
+                return;
+            final MarkerOptions tmpOption = new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromBitmap(ViewUtil.getCovidMarkerBitmap()));
+            list.forEach(latLng -> {
+                mMap.addMarker(tmpOption.position(latLng));
+            });
+        });
     }
 
     private void animateButton(boolean start) {
@@ -373,7 +383,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
 
         setCurrentLocation();
-
+        viewModel.refreshHotspotList();
     }
 
     private void stopTracking() {

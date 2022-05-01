@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.android.arijit.firebase.walker.utils.FirebaseUtil;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -41,6 +42,16 @@ public class FormViewModel extends ViewModel {
     }
 
     private Calendar currDate;
+
+    private LatLng latLang;
+
+    public LatLng getLatLang() {
+        return latLang;
+    }
+
+    public void setLatLang(LatLng latLang) {
+        this.latLang = latLang;
+    }
 
     public Calendar getCurrDate() {
         if (currDate == null) {
@@ -94,7 +105,7 @@ public class FormViewModel extends ViewModel {
                 getCurrDate().get(Calendar.DAY_OF_MONTH)
         );
         Date dd = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        FirebaseUtil.updateCovidStatus(true, dd, (v) -> {
+        FirebaseUtil.updateCovidStatus(true, dd, latLang, (v) -> {
             _record_status.postValue(1);
             String dateStr = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(dd);
             _record_date.postValue(dateStr);

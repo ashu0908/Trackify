@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -31,6 +32,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ViewUtil {
     private final static int ANIM_TIME = 500;
+
+    private static Bitmap covidMarkerBitmap;
 
     public static void setMapTheme(@NonNull Context context, GoogleMap mMap){
         int res,
@@ -171,6 +174,16 @@ public class ViewUtil {
                 B = locationFromLatLng(b);
 
         return A.distanceTo(B);
+    }
+
+    public static Bitmap getCovidMarkerBitmap() {
+        if(covidMarkerBitmap == null) {
+            int width = 100;
+            Bitmap tmp = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.danger);
+            covidMarkerBitmap = Bitmap.createScaledBitmap(tmp, width, width, true);
+        }
+
+        return covidMarkerBitmap;
     }
 
 }

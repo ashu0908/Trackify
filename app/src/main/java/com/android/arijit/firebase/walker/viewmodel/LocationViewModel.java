@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class LocationViewModel extends ViewModel {
@@ -25,6 +26,11 @@ public class LocationViewModel extends ViewModel {
     private final MutableLiveData<Boolean> trackState = new MutableLiveData<>(Boolean.FALSE);
     public final ObservableField<String> resDate = new ObservableField<>();
     public final ObservableField<String> resTime = new ObservableField<>();
+
+    private final MutableLiveData<List<LatLng>> _hotspotList = new MutableLiveData<>();
+    public LiveData<List<LatLng>> getHotspotList() {
+        return _hotspotList;
+    }
 
     private Uri currPhotoUri;
 
@@ -106,4 +112,9 @@ public class LocationViewModel extends ViewModel {
         File image = new File(getCurrPhotoUri().getPath());
             FirebaseUtil.uploadImage(getCurrPhotoUri());
     }
+
+    public void refreshHotspotList() {
+        FirebaseUtil.getCovidHotspot(_hotspotList::postValue);
+    }
+
 }

@@ -1,7 +1,6 @@
 package com.android.arijit.firebase.walker.viewmodel;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,6 +14,7 @@ import com.android.arijit.firebase.walker.views.GalleryFragment;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -26,47 +26,23 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class GalleryViewModel extends ViewModel {
 
     private static final String TAG = GalleryFragment.class.getSimpleName();
-    public MutableLiveData<ArrayList<SuperPictureData>> pictureList = new MutableLiveData<>();
+    public MutableLiveData<List<SuperPictureData>> pictureList = new MutableLiveData<>();
 
-    public GalleryViewModel(){
-        Log.i(TAG, "GalleryViewModel: constructor called");
-        FirebaseUtil.fetchPictureData(list ->
-                Observable.fromCallable( () -> modifyPictureList(list))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ArrayList<SuperPictureData>>() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(@NonNull ArrayList<SuperPictureData> superPictureData) {
-                        pictureList.setValue(superPictureData);
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                }));
+    public GalleryViewModel() {
+//        refreshPictureList();
     }
 
-    private ArrayList<SuperPictureData> modifyPictureList(ArrayList<PictureData> list){
-        ArrayList<SuperPictureData> result = new ArrayList<>();
+    private List<SuperPictureData> modifyPictureList(List<PictureData> list) {
+        List<SuperPictureData> result = new ArrayList<>();
         PictureHeaderData lastHeader = null;
 
-        for(PictureData picture: list){
+        for (PictureData picture : list) {
             Date date = picture.getDate().toDate();
 
             @SuppressLint("SimpleDateFormat")
             String sdf = new SimpleDateFormat("d MMM yyyy").format(date);
 
-            if(lastHeader == null || !lastHeader.date.equals(sdf)){
+            if (lastHeader == null || !lastHeader.date.equals(sdf)) {
                 lastHeader = new PictureHeaderData(sdf);
                 result.add(lastHeader);
             }
@@ -76,8 +52,32 @@ public class GalleryViewModel extends ViewModel {
         return result;
     }
 
-    public interface OnDataFetchListener {
-        void onDataFetch(ArrayList<PictureData> list);
+    public void refreshPictureList() {
+        FirebaseUtil.fetchPictureData(list ->
+                Observable.fromCallable(() -> modifyPictureList(list))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<List<SuperPictureData>>() {
+                            @Override
+                            public void onSubscribe(@NonNull Disposable d) {
+
+                            }
+
+                            @Override
+                            public void onNext(@NonNull List<SuperPictureData> superPictureData) {
+                                pictureList.setValue(superPictureData);
+                            }
+
+                            @Override
+                            public void onError(@NonNull Throwable e) {
+                                e.printStackTrace();
+                            }
+
+                            @Override
+                            public void onComplete() {
+                            }
+                        })
+        );
     }
 
 }

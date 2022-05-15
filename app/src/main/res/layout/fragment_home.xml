@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <import type="com.android.arijit.firebase.walker.views.SettingsFragment" />
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
 
         <variable
             name="viewModel"
@@ -35,11 +36,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="12dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_camera_24"
-                android:layout_marginBottom="12dp"
-                app:borderWidth="0dp"
                 android:visibility="@{viewModel.getTrackState()? View.VISIBLE: View.GONE}"
+                app:borderWidth="0dp"
                 app:fabSize="mini" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -47,11 +48,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="12dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_baseline_my_location_24"
                 app:backgroundTint="@color/white"
                 app:borderWidth="0dp"
-                android:layout_marginBottom="12dp"
                 app:tint="@color/gray" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -59,11 +60,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="12dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_baseline_directions_24"
                 app:backgroundTint="@color/fab_blue"
                 app:borderWidth="0dp"
-                android:layout_margin="12dp"
                 app:rippleColor="@android:color/transparent"
                 app:tint="@color/white" />
 
@@ -101,6 +102,18 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/black" />
         </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_options"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_marginTop="80dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_option_stack"
+            app:backgroundTint="@color/white"
+            app:fabSize="mini" />
 
         <include
             android:id="@+id/container_result"

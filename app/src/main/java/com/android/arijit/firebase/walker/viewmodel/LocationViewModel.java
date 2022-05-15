@@ -20,12 +20,24 @@ import java.util.Objects;
 
 public class LocationViewModel extends ViewModel {
 
+    public enum Mode {
+        DEFAULT, COVID;
+    }
+
     private ResultData resultData;
     public final ObservableFloat distInMetre = new ObservableFloat();
     private final MutableLiveData<ArrayList<LatLng>> curGotPosition = new MutableLiveData<>();
     private final MutableLiveData<Boolean> trackState = new MutableLiveData<>(Boolean.FALSE);
     public final ObservableField<String> resDate = new ObservableField<>();
     public final ObservableField<String> resTime = new ObservableField<>();
+    private final MutableLiveData<Mode> _currMode = new MutableLiveData<>();
+
+    public LiveData<Mode> getCurrentMode() {
+        return _currMode;
+    }
+    public void setMode(Mode aDefault) {
+        _currMode.setValue(aDefault);
+    }
 
     private final MutableLiveData<List<LatLng>> _hotspotList = new MutableLiveData<>();
     public LiveData<List<LatLng>> getHotspotList() {
@@ -39,6 +51,7 @@ public class LocationViewModel extends ViewModel {
         this.curGotPosition.setValue(new ArrayList<>());
         this.resultData = new ResultData();
         setDateTime();
+        _currMode.setValue(Mode.DEFAULT);
     }
 
     public Uri getCurrPhotoUri() {

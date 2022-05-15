@@ -5,6 +5,7 @@ import static com.android.arijit.firebase.walker.utils.FileUtils.ALLOW_KEY;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -38,6 +39,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.android.arijit.firebase.walker.R;
 import com.android.arijit.firebase.walker.applications.App;
 import com.android.arijit.firebase.walker.databinding.FragmentHomeBinding;
+import com.android.arijit.firebase.walker.databinding.LayoutMapOptionBinding;
 import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
 import com.android.arijit.firebase.walker.models.ForegroundService;
 import com.android.arijit.firebase.walker.utils.FileUtils;
@@ -46,6 +48,7 @@ import com.android.arijit.firebase.walker.utils.MarkerAnimation;
 import com.android.arijit.firebase.walker.utils.ViewUtil;
 import com.android.arijit.firebase.walker.viewmodel.HistoryListViewModel;
 import com.android.arijit.firebase.walker.viewmodel.LocationViewModel;
+import com.android.arijit.firebase.walker.viewmodel.LocationViewModel.Mode;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -62,11 +65,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,6 +96,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
      * Data members
      */
     private FragmentHomeBinding binding;
+    private LayoutMapOptionBinding optionBinding;
     private GoogleMap mMap;
     private Animation disReveal, disHide, countDownZoom, cardReveal, cardHide;
     private FusedLocationProviderClient providerClient;
@@ -101,13 +108,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public static int POLYLINE_COLOR;
     private LocationViewModel viewModel;
     private HistoryListViewModel historyViewModel;
+    private final List<Marker> covidMarkerList = new LinkedList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         viewModel = ForegroundService.locationViewModel;
-        setObservers();
         requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -122,6 +129,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
         binding.containerResult.setViewModel(viewModel);
+        optionBinding = LayoutMapOptionBinding.inflate(inflater);
         return binding.getRoot();
     }
 
@@ -144,16 +152,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
              binding.fabAction.setBackgroundTintList(ColorStateList.valueOf(App.getContext().getColor(R.color.stop_red)));
         valueAnimator = ViewUtil.animatorForFab(binding.fabAction);
         setOnClickListeners();
+        setObservers();
         ViewUtil.init(binding.fabActionCam);
-        viewModel.getHotspotList().observe(getViewLifecycleOwner(), list -> {
-            if(mMap == null)
-                return;
-            final MarkerOptions tmpOption = new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromBitmap(ViewUtil.getCovidMarkerBitmap()));
-            list.forEach(latLng -> {
-                mMap.addMarker(tmpOption.position(latLng));
-            });
-        });
     }
 
     private void animateButton(boolean start) {
@@ -200,10 +200,58 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             });
         }));
 
-        binding.fabActionCam.setOnClickListener( v -> openCamera());
+        binding.fabActionCam.setOnClickListener(this::openCamera);
+
+        binding.fabOptions.setOnClickListener(v -> {
+            final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext());
+            ViewGroup group = (ViewGroup) optionBinding.getRoot().getParent();
+            if(group != null) {
+                group.removeAllViews();
+            }
+            bottomSheetDialog.setContentView(optionBinding.getRoot());
+            bottomSheetDialog.show();
+        });
+
+        optionBinding.optionMapDefault.setOnClickListener(this::onOptionButtonClicked);
+        optionBinding.optionMapCovid.setOnClickListener(this::onOptionButtonClicked);
+        optionBinding.optionMapDefault.setOnCheckedChangeListener((card, isChecked) -> {
+            optionBinding.optionMapDefaultLabel.setChecked(isChecked);
+            if(!isChecked)
+                return;
+            covidMarkerList.forEach(Marker::remove);
+        });
+        optionBinding.optionMapCovid.setOnCheckedChangeListener((card, isChecked) -> {
+            optionBinding.optionMapCovidLabel.setChecked(isChecked);
+            if(!isChecked)
+                return;
+            viewModel.refreshHotspotList();
+        });
+
     }
 
-    private void openCamera() {
+    private void toggleOffAllOption() {
+        optionBinding.optionMapDefault.setChecked(false);
+        optionBinding.optionMapCovid.setChecked(false);
+        optionBinding.optionMapDefaultLabel.setChecked(false);
+        optionBinding.optionMapCovidLabel.setChecked(false);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    private void onOptionButtonClicked(View v) {
+        MaterialCardView card = (MaterialCardView) v;
+        if(card.isChecked())
+            return;
+        switch (card.getId()) {
+            case R.id.option_map_default:
+                viewModel.setMode(Mode.DEFAULT);
+                break;
+            case R.id.option_map_covid:
+                viewModel.setMode(Mode.COVID);
+                break;
+        }
+    }
+
+    private void openCamera(View v) {
         if(checkPermission()) {
             dispatchTakePictureIntent();
         }
@@ -317,7 +365,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void setObservers() {
-        viewModel.getCurGotPosition().observe(this, list->{
+        viewModel.getCurGotPosition().observe(getViewLifecycleOwner(), list->{
             if (!viewModel.getTrackState() || list.isEmpty()) return;
             travelCoordinates = list;
             initLatLng = travelCoordinates.get(travelCoordinates.size() - 1);
@@ -325,6 +373,28 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             if (mMap != null && curMarker != null) {
                 Log.i(TAG, "setObservers: inside if "+initLatLng);
                 MarkerAnimation.animateMarkerToGB(mMap, curMarker, initLatLng, new LatLngInterpolator.Spherical());
+            }
+        });
+
+        viewModel.getHotspotList().observe(getViewLifecycleOwner(), list -> {
+            if(mMap == null)
+                return;
+            final MarkerOptions tmpOption = new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromBitmap(ViewUtil.getCovidMarkerBitmap()));
+            list.forEach(latLng -> {
+                covidMarkerList.add(mMap.addMarker(tmpOption.position(latLng)));
+            });
+        });
+
+        viewModel.getCurrentMode().observe(getViewLifecycleOwner(), mode -> {
+            toggleOffAllOption();
+            switch(mode) {
+                case DEFAULT:
+                    optionBinding.optionMapDefault.toggle();
+                    break;
+                case COVID:
+                    optionBinding.optionMapCovid.toggle();
+                    break;
             }
         });
     }
@@ -383,7 +453,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
 
         setCurrentLocation();
-        viewModel.refreshHotspotList();
     }
 
     private void stopTracking() {

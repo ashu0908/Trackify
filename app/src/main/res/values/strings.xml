@@ -28,4 +28,7 @@
     <string name="mark_as_safe">Mark as Safe</string>
     <string name="mark_as_safe_qn">Mark as Safe ?</string>
     <string name="your_covid_status">Your Covid Status</string>
+    <string name="map_type">Map type</string>
+    <string name="default_map">Default</string>
+    <string name="covid_view">Covid</string>
 </resources>

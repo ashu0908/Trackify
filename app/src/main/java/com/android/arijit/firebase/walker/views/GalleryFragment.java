@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.android.arijit.firebase.walker.adapters.GalleryAdapter;
 import com.android.arijit.firebase.walker.databinding.FragmentGalleryBinding;
 import com.android.arijit.firebase.walker.utils.OnBackPressImpl;
-import com.android.arijit.firebase.walker.viewmodel.GalleryViewModel;
+import com.android.arijit.firebase.walker.viewmodels.GalleryViewModel;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -1,4 +1,4 @@
-package com.android.arijit.firebase.walker.models;
+package com.android.arijit.firebase.walker.services;
 
 import static com.android.arijit.firebase.walker.views.SettingsFragment.distanceFormat;
 
@@ -11,7 +11,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -25,7 +24,8 @@ import androidx.core.content.ContextCompat;
 
 import com.android.arijit.firebase.walker.MainActivity;
 import com.android.arijit.firebase.walker.R;
-import com.android.arijit.firebase.walker.viewmodel.LocationViewModel;
+import com.android.arijit.firebase.walker.models.ResultData;
+import com.android.arijit.firebase.walker.viewmodels.LocationViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -104,15 +104,13 @@ public class ForegroundService extends Service {
         return null;
     }
     private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Foreground Service Channel",
-                    NotificationManager.IMPORTANCE_LOW
-            );
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(serviceChannel);
-        }
+        NotificationChannel serviceChannel = new NotificationChannel(
+                CHANNEL_ID,
+                "Foreground Service Channel",
+                NotificationManager.IMPORTANCE_LOW
+        );
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(serviceChannel);
     }
 
     private void startTrack(){

@@ -13,8 +13,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.android.arijit.firebase.walker.R;
 import com.android.arijit.firebase.walker.databinding.FragmentCovidSummaryBinding;
+import com.android.arijit.firebase.walker.services.AlarmReceiver;
 import com.android.arijit.firebase.walker.utils.OnBackPressImpl;
-import com.android.arijit.firebase.walker.viewmodel.FormViewModel;
+import com.android.arijit.firebase.walker.viewmodels.FormViewModel;
 
 public class CovidSummaryFragment extends Fragment {
 
@@ -38,7 +39,7 @@ public class CovidSummaryFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCovidSummaryBinding.inflate(inflater, container, false);
         binding.setLifecycleOwner(getViewLifecycleOwner());
@@ -57,7 +58,10 @@ public class CovidSummaryFragment extends Fragment {
                 .setMessage(getString(R.string.mark_as_safe_qn))
                 .setCancelable(false)
                 .setTitle(getString(R.string.confirm))
-                .setPositiveButton(R.string.ok, (d, i) -> viewModel.onConfirmNegative())
+                .setPositiveButton(R.string.ok, (d, i) -> {
+                    viewModel.onConfirmNegative();
+                    AlarmReceiver.cancelAlarm(requireContext());
+                })
                 .setNegativeButton(R.string.cancel, (d, i) -> d.dismiss())
                 .show();
     }

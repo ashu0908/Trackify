@@ -24,8 +24,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.android.arijit.firebase.walker.R;
 import com.android.arijit.firebase.walker.applications.App;
 import com.android.arijit.firebase.walker.databinding.FragmentFormBinding;
+import com.android.arijit.firebase.walker.services.AlarmReceiver;
+import com.android.arijit.firebase.walker.utils.DateUtil;
+import com.android.arijit.firebase.walker.utils.FileUtils;
 import com.android.arijit.firebase.walker.utils.OnBackPressImpl;
-import com.android.arijit.firebase.walker.viewmodel.FormViewModel;
+import com.android.arijit.firebase.walker.viewmodels.FormViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -91,7 +94,6 @@ public class FormFragment extends Fragment implements DatePickerDialog.OnDateSet
                 .setTitle(getString(R.string.confirm))
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                     dialogInterface.dismiss();
-//                    viewModel.onConfirmPositive();
                     doWorkAndShowProgress();
                 })
                 .setNegativeButton(R.string.cancel, (d, i) -> d.dismiss())
@@ -143,6 +145,8 @@ public class FormFragment extends Fragment implements DatePickerDialog.OnDateSet
                     return;
                 viewModel.setLatLang(new LatLng(location.getLatitude(), location.getLongitude()));
                 viewModel.onConfirmPositive();
+                FileUtils.saveDateToPreferenceCovidDate(requireContext(), DateUtil.calenderToLocalDate(viewModel.getCurrDate()));
+                AlarmReceiver.scheduleAlarm(requireContext());
                 dialogDismisser.accept(null);
             })
             .addOnFailureListener(e -> {

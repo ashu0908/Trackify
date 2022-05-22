@@ -8,6 +8,8 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class FileUtils {
@@ -16,6 +18,9 @@ public class FileUtils {
 
     public static final String ALLOW_KEY = "ALLOWED";
     public static final String CAMERA_PREF = "camera_pref";
+
+    public static final String COVID_PREF = "covid_pref";
+    public static final String MARKED_DATE = "MARKED_DATE";
 
     public static File createImageFile(final Context context) throws IOException {
         // Create an image file name
@@ -44,6 +49,20 @@ public class FileUtils {
         SharedPreferences myPrefs = context.getSharedPreferences(CAMERA_PREF,
                 Context.MODE_PRIVATE);
         return (myPrefs.getBoolean(key, false));
+    }
+
+
+    public static void saveDateToPreferenceCovidDate(Context context, LocalDate date) {
+        SharedPreferences prefs = context.getSharedPreferences(COVID_PREF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = prefs.edit();
+        prefEditor.putString(MARKED_DATE, date.format(DateTimeFormatter.ISO_DATE));
+        prefEditor.apply();
+    }
+    public static LocalDate getPreferenceCovidDate(Context context) {
+        SharedPreferences myPrefs = context.getSharedPreferences(COVID_PREF,
+                Context.MODE_PRIVATE);
+        String dateString = myPrefs.getString(MARKED_DATE, null);
+        return (dateString == null ? null : LocalDate.parse(dateString, DateTimeFormatter.ISO_DATE));
     }
 
 }

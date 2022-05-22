@@ -31,4 +31,7 @@
     <string name="map_type">Map type</string>
     <string name="default_map">Default</string>
     <string name="covid_view">Covid</string>
+    <string name="review_notification_channel">Safety Review Channel</string>
+    <string name="recovery_message">It\'s been 2 weeks since you marked yourself as Covid Positive. Have you recovered?</string>
+    <string name="recovery_message_title">How are you?</string>
 </resources>

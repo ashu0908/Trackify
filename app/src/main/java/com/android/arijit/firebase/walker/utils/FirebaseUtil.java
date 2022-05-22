@@ -13,7 +13,7 @@ import com.android.arijit.firebase.walker.interfaces.OnDataFetchedListener;
 import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
 import com.android.arijit.firebase.walker.models.PictureData;
 import com.android.arijit.firebase.walker.models.ResultData;
-import com.android.arijit.firebase.walker.viewmodel.HistoryListViewModel;
+import com.android.arijit.firebase.walker.viewmodels.HistoryListViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;

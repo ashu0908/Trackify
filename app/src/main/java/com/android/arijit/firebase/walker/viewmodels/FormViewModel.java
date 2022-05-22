@@ -1,4 +1,4 @@
-package com.android.arijit.firebase.walker.viewmodel;
+package com.android.arijit.firebase.walker.viewmodels;
 
 import android.annotation.SuppressLint;
 
@@ -6,12 +6,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.android.arijit.firebase.walker.utils.DateUtil;
 import com.android.arijit.firebase.walker.utils.FirebaseUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -67,14 +67,18 @@ public class FormViewModel extends ViewModel {
     }
 
     public FormViewModel() {
+        refresh();
+    }
+
+    private void refresh() {
         FirebaseUtil.fetchCovidStatus((status, date) -> {
             if (status == null || date == null) {
                 _record_status.postValue(0);
                 return;
             }
-            _record_status.postValue(status ? 1 : 0);
             String dateStr = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(date);
             _record_date.postValue(dateStr);
+            _record_status.postValue(status ? 1 : 0);
         });
     }
 
@@ -104,7 +108,7 @@ public class FormViewModel extends ViewModel {
                 getCurrDate().get(Calendar.MONTH) + 1,
                 getCurrDate().get(Calendar.DAY_OF_MONTH)
         );
-        Date dd = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date dd = DateUtil.calendarToDate(getCurrDate());
         FirebaseUtil.updateCovidStatus(true, dd, latLang, (v) -> {
             _record_status.postValue(1);
             String dateStr = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(dd);

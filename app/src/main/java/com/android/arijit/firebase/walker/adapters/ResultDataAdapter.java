@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.arijit.firebase.walker.databinding.ItemViewTempBinding;
 import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
 import com.android.arijit.firebase.walker.interfaces.OnHistoryItemClickedListener;
-import com.android.arijit.firebase.walker.models.ForegroundService;
+import com.android.arijit.firebase.walker.services.ForegroundService;
 import com.android.arijit.firebase.walker.models.ResultData;
 import com.android.arijit.firebase.walker.utils.FirebaseUtil;
 import com.android.arijit.firebase.walker.views.SettingsFragment;

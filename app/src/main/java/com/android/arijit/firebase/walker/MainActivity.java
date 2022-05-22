@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements
     public final static String THEME_KEY = "theme";
     public final static String UNIT_KEY = "unit";
     public final static String VIRGIN = "virgin";
+    public static final String LAUNCH_FRAGMENT = "launch_fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +52,14 @@ public class MainActivity extends AppCompatActivity implements
 
         binding.navigation.setOnNavigationItemSelectedListener(this);
         binding.navigation.setOnNavigationItemReselectedListener(this);
-        if(savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .addToBackStack("stack")
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .replace(R.id.main_fragment_container, new HomeFragment(this))
-                    .commit();
+
+        final String stringExtra = getIntent().getStringExtra(LAUNCH_FRAGMENT);
+
+        loadFragment(new HomeFragment(this));
+        if (CovidFragment.class.getName().equals(stringExtra)) {
+            loadFragment(CovidFragment.newInstance());
+            ( (BottomNavigationView) findViewById(R.id.navigation))
+                    .setSelectedItemId(R.id.navigation_form);
         }
 
     }

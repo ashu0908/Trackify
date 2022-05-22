@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.arijit.firebase.walker.R;
-import com.android.arijit.firebase.walker.viewmodel.FormViewModel;
+import com.android.arijit.firebase.walker.viewmodels.FormViewModel;
 
 public class CovidFragment extends Fragment {
 
@@ -49,10 +49,10 @@ public class CovidFragment extends Fragment {
              * 0 = negative
              * 1 = positive
              */
-            if (status == 0)
+            if (status == 0) {
                 loadFragment(FormFragment.newInstance());
+            }
             else {
-                // todo write logic for invoking other fragment
                 loadFragment(CovidSummaryFragment.newInstance());
             }
         });
@@ -63,7 +63,6 @@ public class CovidFragment extends Fragment {
         getFragmentManager()
                 .beginTransaction()
                 .addToBackStack("stack")
-//                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.form_selector_fragment, fragment)
                 .commit();
     }

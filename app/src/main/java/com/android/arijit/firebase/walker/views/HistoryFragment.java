@@ -23,7 +23,7 @@ import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
 import com.android.arijit.firebase.walker.interfaces.OnHistoryItemClickedListener;
 import com.android.arijit.firebase.walker.models.ResultData;
 import com.android.arijit.firebase.walker.utils.ViewUtil;
-import com.android.arijit.firebase.walker.viewmodel.HistoryListViewModel;
+import com.android.arijit.firebase.walker.viewmodels.HistoryListViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;

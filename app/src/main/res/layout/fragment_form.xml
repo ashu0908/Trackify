@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.android.arijit.firebase.walker.viewmodel.FormViewModel" />
+            type="com.android.arijit.firebase.walker.viewmodels.FormViewModel" />
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"

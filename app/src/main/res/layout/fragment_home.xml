@@ -11,7 +11,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.arijit.firebase.walker.viewmodel.LocationViewModel" />
+            type="com.android.arijit.firebase.walker.viewmodels.LocationViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

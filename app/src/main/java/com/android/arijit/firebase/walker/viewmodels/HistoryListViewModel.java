@@ -1,4 +1,4 @@
-package com.android.arijit.firebase.walker.viewmodel;
+package com.android.arijit.firebase.walker.viewmodels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
